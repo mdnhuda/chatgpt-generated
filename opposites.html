@@ -1,0 +1,106 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <meta name="theme-color" content="#fafafa">
+
+  <title>Kindi Fun & Learn! - Opposite Word Flashcards</title>
+  <style>
+    .flashcard {
+      width: 300px;
+      height: 200px;
+      border: 1px solid black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+    }
+
+    .flashcard-word {
+      margin-bottom: 10px;
+    }
+
+    .flashcard-opposite {
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+<h1>Opposite Word Flashcards</h1>
+
+<div class="flashcard" id="flashcard">
+  <div class="flashcard-word"></div>
+  <div class="flashcard-opposite"></div>
+</div>
+<button onclick="showPreviousCard()">&lt; Previous</button>
+<button onclick="toggleDisplay()">Toggle</button>
+<button onclick="showNextCard()">Next &gt;</button>
+
+<script>
+  var flashcards;
+  var flashcardIndex = 0;
+  var flashcardElement = document.getElementById("flashcard");
+  var wordElement = flashcardElement.querySelector(".flashcard-word");
+  var oppositeElement = flashcardElement.querySelector(".flashcard-opposite");
+  var displayWord = true;
+
+  function loadFlashcards() {
+    var xhr = new XMLHttpRequest();
+    xhr.overrideMimeType("application/json");
+    xhr.open('GET', 'data/opposite-flashcards.json', true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == "200") {
+        flashcards = JSON.parse(xhr.responseText);
+        showCard();
+      }
+    };
+    xhr.send(null);
+  }
+
+  function showCard() {
+    var currentFlashcard = flashcards[flashcardIndex];
+    if (displayWord) {
+      wordElement.innerText = currentFlashcard.word;
+      oppositeElement.innerText = "";
+    } else {
+      wordElement.innerText = "";
+      oppositeElement.innerText = currentFlashcard.opposite;
+    }
+  }
+
+  function showNextCard() {
+    flashcardIndex = (flashcardIndex + 1) % flashcards.length;
+    showCard();
+  }
+
+  function showPreviousCard() {
+    flashcardIndex = (flashcardIndex - 1 + flashcards.length) % flashcards.length;
+    showCard();
+  }
+
+  function toggleDisplay() {
+    displayWord = !displayWord;
+    showCard();
+  }
+
+  loadFlashcards(); // Load flashcards from JSON file
+</script>
+</body>
+</html>
