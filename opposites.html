@@ -46,7 +46,7 @@
       border-radius: 10px;
       background-color: #fff;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      position: absolute;
+      position: relative;
       transform-style: preserve-3d;
       transition: transform 0.5s;
       cursor: pointer;
@@ -87,15 +87,15 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      width: 20px;
-      height: 40px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .arrow {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      width: 20px;
+      height: 40px;
       background-repeat: no-repeat;
       background-position: center;
       background-size: 12px;
@@ -104,13 +104,13 @@
     }
 
     .arrow.left {
-      left: 0;
       background-image: url('/img/left-arrow.png');
+      margin-left: 10px;
     }
 
     .arrow.right {
-      right: 0;
       background-image: url('/img/right-arrow.png');
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -138,8 +138,8 @@
   var flashcards;
   var flashcardIndex = 0;
   var flashcardElement = document.getElementById("flashcard");
-  var wordElement = flashcardElement.querySelector(".flashcard-word");
-  var oppositeElement = flashcardElement.querySelector(".flashcard-opposite");
+  var wordElement = document.querySelector(".flashcard-word");
+  var oppositeElement = document.querySelector(".flashcard-opposite");
   var displayWord = true;
 
   function loadFlashcards() {
