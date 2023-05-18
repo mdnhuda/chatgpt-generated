@@ -22,36 +22,117 @@
 
   <title>Kindi Fun & Learn! - Opposite Word Flashcards</title>
   <style>
-    .flashcard {
-      width: 300px;
-      height: 200px;
-      border: 1px solid black;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
     }
 
-    .flashcard-word {
+    h1 {
+      color: #333;
+    }
+
+    .flashcard-container {
+      width: 300px;
+      height: 200px;
+      margin: 0 auto;
+      position: relative;
+      perspective: 800px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: transform 0.5s;
+      cursor: pointer;
+    }
+
+    .flashcard-front,
+    .flashcard-back {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      backface-visibility: hidden;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .flashcard-front {
+      background-color: #65c4af;
+    }
+
+    .flashcard-back {
+      background-color: #ff7171;
+      transform: rotateY(180deg);
+    }
+
+    .flashcard .flashcard-word {
       margin-bottom: 10px;
     }
 
-    .flashcard-opposite {
-      color: gray;
+    .flashcard .flashcard-opposite {
+      color: #fff;
+    }
+
+    .arrow-container {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 40px;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 12px;
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .arrow.left {
+      left: 0;
+      background-image: url('/img/left-arrow.png');
+    }
+
+    .arrow.right {
+      right: 0;
+      background-image: url('/img/right-arrow.png');
     }
   </style>
 </head>
 <body>
 <h1>Opposite Word Flashcards</h1>
 
-<div class="flashcard" id="flashcard">
-  <div class="flashcard-word"></div>
-  <div class="flashcard-opposite"></div>
+<div class="flashcard-container">
+  <div class="flashcard" id="flashcard">
+    <div class="flashcard-front">
+      <div class="flashcard-word"></div>
+      <div class="flashcard-opposite"></div>
+    </div>
+    <div class="flashcard-back">
+      <div class="flashcard-opposite"></div>
+      <div class="flashcard-word"></div>
+    </div>
+  </div>
+  <div class="arrow-container">
+    <div class="arrow left" onclick="showPreviousCard()"></div>
+    <div class="arrow right" onclick="showNextCard()"></div>
+  </div>
 </div>
-<button onclick="showPreviousCard()">&lt; Previous</button>
-<button onclick="toggleDisplay()">Toggle</button>
-<button onclick="showNextCard()">Next &gt;</button>
 
 <script>
   var flashcards;
@@ -85,18 +166,33 @@
     }
   }
 
+  function toggleDisplay() {
+    displayWord = !displayWord;
+    flashcardElement.style.transform = "rotateY(0deg)";
+    showCard();
+  }
+
+  flashcardElement.addEventListener("click", function () {
+    toggleDisplay();
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.keyCode === 37) {
+      showPreviousCard();
+    } else if (event.keyCode === 39) {
+      showNextCard();
+    }
+  });
+
   function showNextCard() {
     flashcardIndex = (flashcardIndex + 1) % flashcards.length;
+    flashcardElement.style.transform = "rotateY(0deg)";
     showCard();
   }
 
   function showPreviousCard() {
     flashcardIndex = (flashcardIndex - 1 + flashcards.length) % flashcards.length;
-    showCard();
-  }
-
-  function toggleDisplay() {
-    displayWord = !displayWord;
+    flashcardElement.style.transform = "rotateY(0deg)";
     showCard();
   }
 
