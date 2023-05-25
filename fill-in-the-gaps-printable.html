@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fill in the Gaps Printable</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #print-btn {
+      display: block;
+      margin: auto auto 20px;
+      text-align: center;
+    }
+
+    .word-list {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .word-row {
+      width: 350px;
+      justify-content: space-between;
+      line-height: 50px;
+      letter-spacing: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-right: 50px;
+    }
+
+    .word-gap {
+      font-weight: bold;
+      border-bottom: 1px dashed #000;
+      display: flex;
+      align-items: center;
+    }
+
+    .imgBox {
+      width: 100px;
+      border: 1px solid black;
+      margin-right: 10px;
+    }
+
+    .word-gap img{
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+
+    .word-gap .word {
+      margin-left: 30px;
+      font-size: 40px;
+    }
+  </style>
+</head>
+<body>
+<h1>Fill in the Gaps Printable</h1>
+<button id="print-btn">Print</button>
+<div class="word-list" id="word-list-container"></div>
+
+<script>
+  var printButton = document.getElementById('print-btn');
+  var wordListContainer = document.getElementById('word-list-container');
+
+  // Function to fetch the word list from a separate file
+  function fetchWordList() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/data/fill-gap-word-list.json', true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var wordList = JSON.parse(xhr.responseText);
+        renderWordList(wordList);
+      }
+    };
+    xhr.send();
+  }
+
+  // Function to render the word list
+  function renderWordList(wordList) {
+    var wordRows = '';
+    const shuffled = wordList.sort(() => 0.5 - Math.random());
+    shuffled.slice(0, 12).forEach(function(words) {
+      var wordRow = '<div class="word-row">';
+      console.log(words);
+      var {word} = words;
+      var missingLetterIndex = getRandomInt(0, word.length - 1);
+      var missingLetter = word.charAt(missingLetterIndex);
+      var wordWithMissingLetter = word.replace(missingLetter, '_');
+      var imageIdx = getRandomInt(0, 3);
+      var imageElement = `<div class="imgBox"><img class="word-image" src="/img/bing/${word}/${imageIdx}.jpeg" alt=""></div>`;
+      var wordGap = `<div class="word-gap">${imageElement}<span class="word">${wordWithMissingLetter}</span></div>`;
+      wordRow += wordGap;
+
+      wordRow += '</div>';
+      wordRows += wordRow;
+    });
+
+    wordListContainer.innerHTML = wordRows;
+  }
+
+  // Function to generate random integer
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Event listener for print button
+  printButton.addEventListener('click', function() {
+    window.print();
+  });
+
+  // Fetch the word list when the page loads
+  fetchWordList();
+</script>
+</body>
+</html>
