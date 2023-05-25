@@ -2,7 +2,9 @@
 <html>
 <head>
   <title>Fill in the Gaps Printable</title>
+
   <meta charset="UTF-8">
+  <meta name="description" content="Fill in the Gaps Printable - courtesy ChatGPT for coding and BingImageCreator for images">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -80,7 +82,7 @@
   // Function to fetch the word list from a separate file
   function fetchWordList() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/data/fill-gap-word-list.json', true);
+    xhr.open('GET', 'data/fill-gap-word-list.json', true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4 && xhr.status === 200) {
         var wordList = JSON.parse(xhr.responseText);
@@ -102,7 +104,7 @@
       var missingLetter = word.charAt(missingLetterIndex);
       var wordWithMissingLetter = word.replace(missingLetter, '_');
       var imageIdx = getRandomInt(0, 3);
-      var imageElement = `<div class="imgBox"><img class="word-image" src="/img/bing/${word}/${imageIdx}.jpeg" alt=""></div>`;
+      var imageElement = `<div class="imgBox"><img class="word-image" src="img/bing/${word}/${imageIdx}.jpeg" alt=""></div>`;
       var wordGap = `<div class="word-gap">${imageElement}<span class="word">${wordWithMissingLetter}</span></div>`;
       wordRow += wordGap;
 
