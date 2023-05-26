@@ -11,7 +11,7 @@
       background-color: #f2f2f2;
     }
 
-    h1 {
+    .header {
       text-align: center;
     }
 
@@ -33,15 +33,20 @@
       flex-wrap: wrap;
     }
 
+    .labels-container * {
+      margin: 5px;
+    }
+
     .label {
-      width: 100px;
-      margin: 10px;
+      width: 80px;
       text-align: center;
       padding: 10px;
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 5px;
       cursor: move;
+      position: relative;
+      z-index: 9999;
     }
 
     .pictures-container {
@@ -58,6 +63,14 @@
       position: relative;
     }
 
+    .matched {
+      border: 2px #32CD32 solid;
+    }
+
+    .picture .label {
+      margin: auto;
+    }
+
     .picture img {
       max-width: 100%;
       height: auto;
@@ -68,7 +81,6 @@
       width: 100%;
       height: 50px;
       background-color: #32CD32;
-      position: fixed;
       top: 0;
       left: 0;
       text-align: center;
@@ -79,88 +91,154 @@
   </style>
 </head>
 <body>
-<h1>Matching Game</h1>
+<div class="header">
+  <h1>Matching Game</h1>
+  Drag each word to the matching picture!
+</div>
+
 <div class="container">
+  <div class="banner" id="banner"></div>
   <div class="labels-container" id="labelsContainer"></div>
 
   <div class="pictures-container" id="picturesContainer"></div>
 </div>
 
-<div class="banner" id="banner"></div>
-
 <script>
-  var labelsContainer = document.getElementById('labelsContainer');
-  var picturesContainer = document.getElementById('picturesContainer');
-  var matches = 0;
+  const labelsContainer = document.getElementById('labelsContainer');
+  const picturesContainer = document.getElementById('picturesContainer');
+  let matches = 0;
 
   function checkMatch() {
     matches++;
 
     if (matches === picturesContainer.children.length) {
-      var banner = document.getElementById('banner');
+      const banner = document.getElementById('banner');
       banner.innerText = 'Well done!';
       banner.style.display = 'block';
     }
   }
 
   function loadWordsAndImages() {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
-        var data = JSON.parse(xhr.responseText);
-        var words = data.words;
-
-        for (var i = 0; i < words.length; i++) {
-          createLabel(words[i]);
-          createPicture(words[i]);
-        }
+        var words = JSON.parse(xhr.responseText);
+        const shuffled = words.sort(() => 0.5 - Math.random());
+        shuffled.slice(0, 6).forEach(function (word) {
+          createLabel(word);
+          createPicture(word);
+        });
+        shuffleElementsInside(labelsContainer);
       }
     };
-    xhr.open('GET', 'data/match-words.json', true);
+
+    xhr.open('GET', 'data/word-match.json', true);
     xhr.send();
   }
 
+  function shuffleElementsInside(container) {
+    console.log(container);
+    for (let i = container.children.length; i >= 0; i--) {
+      console.log(container.children[Math.random() * i | 0]);
+      container.appendChild(container.children[Math.random() * i | 0]);
+    }
+  }
+
   function createLabel(word) {
-    var label = document.createElement('div');
+    const label = document.createElement('div');
     label.className = 'label';
     label.id = 'label' + word.id;
     label.draggable = true;
     label.dataset.match = 'picture' + word.id;
     label.innerText = word.label;
-    label.addEventListener('dragstart', function(event) {
-      event.dataTransfer.setData('text/plain', event.target.id);
-    });
+    label.addEventListener('dragstart', handleDragStart);
+    label.addEventListener('touchstart', handleTouchStart);
+    label.addEventListener('touchmove', handleTouchMove);
+    label.addEventListener('touchend', handleTouchEnd);
 
     labelsContainer.appendChild(label);
   }
 
   function createPicture(word) {
-    var picture = document.createElement('div');
+    const picture = document.createElement('div');
     picture.className = 'picture';
     picture.id = 'picture' + word.id;
     picture.dataset.match = 'label' + word.id;
 
-    var img = document.createElement('img');
-    img.src = word.image;
+    const img = document.createElement('img');
+    img.src = `img/bing/${word.label}/${getRandomInt(0, 3)}.jpeg`;
     img.alt = word.label;
 
-    picture.appendChild(img);
-    picture.addEventListener('dragover', function(event) {
+    picture.appendChild (img);
+    picture.addEventListener('dragover', function (event) {
       event.preventDefault();
     });
 
-    picture.addEventListener('drop', function(event) {
-      event.preventDefault();
-      var data = event.dataTransfer.getData('text/plain');
-      var label = document.getElementById(data);
-
-      if (label.dataset.match === picture.id && picture.dataset.match === label.id) {
-        picture.appendChild(label);
-        checkMatch();
-      }
-    });
+    picture.addEventListener('drop', handleDrop);
+    picture.addEventListener('touchmove', handleTouchMove);
+    picture.addEventListener('touchend', handleTouchEnd);
 
     picturesContainer.appendChild(picture);
+  }
+
+  // Function to generate random integer
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function handleDragStart(event) {
+    event.dataTransfer.setData('text/plain', event.target.id);
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    var data = event.dataTransfer.getData('text/plain');
+    var label = document.getElementById(data);
+
+    if (label.dataset.match === this.id && this.dataset.match === label.id) {
+      markMatched(this, label);
+    }
+  }
+
+  let touchTarget = null;
+
+  function handleTouchStart(event) {
+    touchTarget = event.target;
+  }
+
+  function handleTouchMove(event) {
+    event.preventDefault();
+
+    if (touchTarget === event.target) {
+      var label = event.target;
+      label.style.position = 'fixed';
+      label.style.left = event.touches[0].clientX + 'px';
+      label.style.top = event.touches[0].clientY + 'px';
+    }
+  }
+
+  function handleTouchEnd(event) {
+    if (touchTarget === event.target) {
+      const data = touchTarget.id;
+      const label = document.getElementById(data);
+      label.style.position = '';
+      label.style.left = '';
+      label.style.top = '';
+
+      var picture = document.elementFromPoint(event.changedTouches[0].clientX, event.changedTouches[0].clientY).closest('.picture');
+      if (picture && label.dataset.match === picture.id && picture.dataset.match === label.id) {
+        markMatched(picture, label);
+      }
+    }
+    touchTarget = null;
+  }
+
+  function markMatched(picture, label) {
+    picture.appendChild(label);
+    picture.classList.add("matched");
+    checkMatch();
   }
 
   loadWordsAndImages();
