@@ -81,57 +81,70 @@
 <body>
 <h1>Matching Game</h1>
 <div class="container">
-  <div class="labels-container">
-    <div class="label" id="label1" draggable="true" data-match="picture1">Apple</div>
-    <div class="label" id="label2" draggable="true" data-match="picture2">Pear</div>
-    <div class="label" id="label3" draggable="true" data-match="picture3">Banana</div>
-    <div class="label" id="label4" draggable="true" data-match="picture4">Orange</div>
-    <div class="label" id="label5" draggable="true" data-match="picture5">Grapes</div>
-  </div>
+  <div class="labels-container" id="labelsContainer"></div>
 
-  <div class="pictures-container">
-    <div class="picture" id="picture1" data-match="label1">
-      <img src="img/bing/Apple/0.jpeg" alt="Apple">
-    </div>
-    <div class="picture" id="picture2" data-match="label2">
-      <img src="img/bing/Pear/0.jpeg" alt="Pear">
-    </div>
-    <div class="picture" id="picture3" data-match="label3">
-      <img src="img/bing/Banana/0.jpeg" alt="Banana">
-    </div>
-    <div class="picture" id="picture4" data-match="label4">
-      <img src="img/bing/Orange/0.jpeg" alt="Orange">
-    </div>
-    <div class="picture" id="picture5" data-match="label5">
-      <img src="img/bing/Grapes/0.jpeg" alt="Grapes">
-    </div>
-  </div>
+  <div class="pictures-container" id="picturesContainer"></div>
 </div>
 
 <div class="banner" id="banner"></div>
 
 <script>
-  var labels = document.querySelectorAll('.label');
-  var pictures = document.querySelectorAll('.picture');
+  var labelsContainer = document.getElementById('labelsContainer');
+  var picturesContainer = document.getElementById('picturesContainer');
   var matches = 0;
 
   function checkMatch() {
     matches++;
 
-    if (matches === pictures.length) {
+    if (matches === picturesContainer.children.length) {
       var banner = document.getElementById('banner');
       banner.innerText = 'Well done!';
       banner.style.display = 'block';
     }
   }
 
-  labels.forEach(function(label) {
+  function loadWordsAndImages() {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var data = JSON.parse(xhr.responseText);
+        var words = data.words;
+
+        for (var i = 0; i < words.length; i++) {
+          createLabel(words[i]);
+          createPicture(words[i]);
+        }
+      }
+    };
+    xhr.open('GET', 'data/match-words.json', true);
+    xhr.send();
+  }
+
+  function createLabel(word) {
+    var label = document.createElement('div');
+    label.className = 'label';
+    label.id = 'label' + word.id;
+    label.draggable = true;
+    label.dataset.match = 'picture' + word.id;
+    label.innerText = word.label;
     label.addEventListener('dragstart', function(event) {
       event.dataTransfer.setData('text/plain', event.target.id);
     });
-  });
 
-  pictures.forEach(function(picture) {
+    labelsContainer.appendChild(label);
+  }
+
+  function createPicture(word) {
+    var picture = document.createElement('div');
+    picture.className = 'picture';
+    picture.id = 'picture' + word.id;
+    picture.dataset.match = 'label' + word.id;
+
+    var img = document.createElement('img');
+    img.src = word.image;
+    img.alt = word.label;
+
+    picture.appendChild(img);
     picture.addEventListener('dragover', function(event) {
       event.preventDefault();
     });
@@ -146,7 +159,11 @@
         checkMatch();
       }
     });
-  });
+
+    picturesContainer.appendChild(picture);
+  }
+
+  loadWordsAndImages();
 </script>
 </body>
 </html>

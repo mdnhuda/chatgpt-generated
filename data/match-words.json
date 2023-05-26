@@ -1,0 +1,29 @@
+{
+  "words": [
+    {
+      "id": 1,
+      "label": "Apple",
+      "image": "img/bing/Apple/0.jpeg"
+    },
+    {
+      "id": 2,
+      "label": "Pear",
+      "image": "img/bing/Pear/0.jpeg"
+    },
+    {
+      "id": 3,
+      "label": "Banana",
+      "image": "img/bing/Banana/0.jpeg"
+    },
+    {
+      "id": 4,
+      "label": "Orange",
+      "image": "img/bing/Orange/0.jpeg"
+    },
+    {
+      "id": 5,
+      "label": "Grapes",
+      "image": "img/bing/Grapes/0.jpeg"
+    }
+  ]
+}
