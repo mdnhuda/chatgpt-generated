@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Matching Game</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Match each word with the corresponding picture! - Courtesy ChatGPT">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .labels-container {
+      width: 100%;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .label {
+      width: 100px;
+      margin: 10px;
+      text-align: center;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: move;
+    }
+
+    .pictures-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .picture {
+      width: 120px;
+      margin: 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    .picture img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .banner {
+      display: none;
+      width: 100%;
+      height: 50px;
+      background-color: #32CD32;
+      position: fixed;
+      top: 0;
+      left: 0;
+      text-align: center;
+      line-height: 50px;
+      font-size: 24px;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+<h1>Matching Game</h1>
+<div class="container">
+  <div class="labels-container">
+    <div class="label" id="label1" draggable="true" data-match="picture1">Apple</div>
+    <div class="label" id="label2" draggable="true" data-match="picture2">Pear</div>
+    <div class="label" id="label3" draggable="true" data-match="picture3">Banana</div>
+    <div class="label" id="label4" draggable="true" data-match="picture4">Orange</div>
+    <div class="label" id="label5" draggable="true" data-match="picture5">Grapes</div>
+  </div>
+
+  <div class="pictures-container">
+    <div class="picture" id="picture1" data-match="label1">
+      <img src="img/bing/Apple/0.jpeg" alt="Apple">
+    </div>
+    <div class="picture" id="picture2" data-match="label2">
+      <img src="img/bing/Pear/0.jpeg" alt="Pear">
+    </div>
+    <div class="picture" id="picture3" data-match="label3">
+      <img src="img/bing/Banana/0.jpeg" alt="Banana">
+    </div>
+    <div class="picture" id="picture4" data-match="label4">
+      <img src="img/bing/Orange/0.jpeg" alt="Orange">
+    </div>
+    <div class="picture" id="picture5" data-match="label5">
+      <img src="img/bing/Grapes/0.jpeg" alt="Grapes">
+    </div>
+  </div>
+</div>
+
+<div class="banner" id="banner"></div>
+
+<script>
+  var labels = document.querySelectorAll('.label');
+  var pictures = document.querySelectorAll('.picture');
+  var matches = 0;
+
+  function checkMatch() {
+    matches++;
+
+    if (matches === pictures.length) {
+      var banner = document.getElementById('banner');
+      banner.innerText = 'Well done!';
+      banner.style.display = 'block';
+    }
+  }
+
+  labels.forEach(function(label) {
+    label.addEventListener('dragstart', function(event) {
+      event.dataTransfer.setData('text/plain', event.target.id);
+    });
+  });
+
+  pictures.forEach(function(picture) {
+    picture.addEventListener('dragover', function(event) {
+      event.preventDefault();
+    });
+
+    picture.addEventListener('drop', function(event) {
+      event.preventDefault();
+      var data = event.dataTransfer.getData('text/plain');
+      var label = document.getElementById(data);
+
+      if (label.dataset.match === picture.id && picture.dataset.match === label.id) {
+        picture.appendChild(label);
+        checkMatch();
+      }
+    });
+  });
+</script>
+</body>
+</html>
