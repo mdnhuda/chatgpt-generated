@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Matching Game</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Match each word with the corresponding picture! - Courtesy ChatGPT">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
+      margin: auto;
+      max-width: 800px;
+    }
+
+    header {
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .subheader {
+      color: gray;
+      padding-top: 5px;
+    }
+
+    .home-button {
+      text-decoration: none;
+      padding: 8px 12px;
+      background-color: #eaeaea;
+      color: #333;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .title {
+      margin: 0;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .label {
+      display: inline-block;
+      min-width: 50px;
+      padding: 12px;
+      font-size: 20px;
+      margin: 4px;
+      background-color: #8AB0D9FF;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .picture {
+      display: inline-block;
+      width: 150px;
+      height: 150px;
+      margin: 8px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .picture img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .selected {
+      background-color: #ffcc80;
+      border: 1px #4caf50 solid;
+    }
+
+    .matched {
+      cursor: auto;
+      opacity: 0.5;
+      border: none;
+    }
+
+    .banner {
+      display: none;
+      text-align: center;
+      font-size: 36px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #4caf50;
+      color: #ffffff;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    .banner a {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-container">
+    <a href="index.html" class="home-button">Home</a>
+    <h1 class="title">Matching Game</h1>
+  </div>
+
+  <div class="subheader">
+    Match each word with the corresponding picture!
+  </div>
+</header>
+
+
+<div class="banner" id="banner"></div>
+
+<div class="container">
+  <div class="labels-container" id="labelsContainer"></div>
+
+  <div class="pictures-container" id="picturesContainer"></div>
+</div>
+
+<script>
+  const labelsContainer = document.getElementById('labelsContainer');
+  const picturesContainer = document.getElementById('picturesContainer');
+  const banner = document.getElementById('banner');
+
+  let matches = 0;
+
+  function checkMatch() {
+    matches++;
+
+    if (matches === labelsContainer.children.length) {
+      const banner = document.getElementById('banner');
+      banner.innerText = 'Well done!';
+      banner.style.display = 'block';
+
+      const playAgain = document.createElement('a');
+      playAgain.innerHTML = 'Play Again!';
+      playAgain.addEventListener('click', newGame);
+
+      banner.appendChild(playAgain);
+    }
+  }
+
+  let words;
+  function loadWordsAndImages() {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        words = JSON.parse(xhr.responseText);
+        newGame(words);
+      }
+    };
+
+    xhr.open('GET', 'data/word-match.json', true);
+    xhr.send();
+  }
+
+  function newGame() {
+    matches = 0;
+    picturesContainer.innerHTML = '';
+    labelsContainer.innerHTML = '';
+    banner.style.display = 'none';
+
+    const shuffled = words.sort(() => 0.5 - Math.random());
+    shuffled.slice(0, 6).forEach(function (word) {
+      createLabel(word);
+      createPicture(word);
+    });
+    shuffleElementsInside(labelsContainer);
+  }
+
+  function shuffleElementsInside(container) {
+    for (let i = container.children.length; i >= 0; i--) {
+      container.appendChild(container.children[Math.random() * i | 0]);
+    }
+  }
+
+  // Function to generate random integer
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function createLabel(word) {
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.id = 'label' + word.id;
+    label.dataset.match = 'picture' + word.id;
+    label.innerText = word.label;
+    label.addEventListener('click', handleLabelClick);
+
+    labelsContainer.appendChild(label);
+  }
+
+  function createPicture(word) {
+    const picture = document.createElement('div');
+    picture.className = 'picture';
+    picture.id = 'picture' + word.id;
+    picture.dataset.match = 'label' + word.id;
+
+    const img = document.createElement('img');
+    img.src = `img/bing/${word.label}/${getRandomInt(0, 3)}.jpeg`;
+    img.alt = word.label;
+
+    picture.appendChild(img);
+    picture.addEventListener('click', handlePictureClick);
+
+    picturesContainer.appendChild(picture);
+  }
+
+  function handleLabelClick(event) {
+    const label = event.currentTarget;
+    const matchId = label.dataset.match;
+    const picture = document.getElementById(matchId);
+
+    if (picture.classList.contains('matched')) {
+      return;
+    }
+
+    label.classList.toggle('selected');
+
+    if (label.classList.contains('selected') && picture.classList.contains('selected')) {
+      if (label.id === matchId) {
+        label.classList.add('matched');
+        picture.classList.add('matched');
+        checkMatch();
+      } else {
+        setTimeout(function () {
+          label.classList.remove('selected');
+          picture.classList.remove('selected');
+        }, 1000);
+      }
+    }
+  }
+
+  function handlePictureClick(event) {
+    const picture = event.currentTarget;
+    const matchId = picture.dataset.match;
+    const label = document.getElementById(matchId);
+
+    if (label.classList.contains('matched')) {
+      return;
+    }
+
+    picture.classList.toggle('selected');
+
+    if (label.classList.contains('selected') && picture.classList.contains('selected')) {
+      if (label.id === matchId) {
+        label.classList.add('matched');
+        picture.classList.add('matched');
+        checkMatch();
+      } else {
+        setTimeout(function () {
+          label.classList.remove('selected');
+          picture.classList.remove('selected');
+        }, 1000);
+      }
+    }
+  }
+
+  loadWordsAndImages();
+</script>
+</body>
+</html>
