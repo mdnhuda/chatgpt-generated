@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lowercase Alphabet Practice</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Printable lowercase alphabet practice for preschoolers">
+    <style>
+        @font-face {
+            font-family: 'EduNSWACTFoundation-VariableFont_wght';
+            src: url(fonts/EduNSWACTFoundation-VariableFont_wght.woff2) format('woff2');
+        }
+
+        body {
+            font-family: 'EduNSWACTFoundation-VariableFont_wght', Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #print-btn {
+            display: block;
+            margin: auto auto 20px;
+            text-align: center;
+        }
+
+        @media print {
+            #print-btn {
+                display: none;
+            }
+        }
+
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            /*border-radius: 5px;*/
+            /*padding: 20px;*/
+            /*box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);*/
+        }
+
+        .line {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            outline: 1px dotted grey;
+            outline-offset: -25px;
+        }
+
+        .letter {
+            text-align: center;
+            font-size: 80px;
+            width: calc(100% / 10);
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body>
+<button id="print-btn">Print</button>
+<div class="page" id="print-content"></div>
+
+<script>
+    var printButton = document.getElementById('print-btn');
+    var printContent = document.getElementById('print-content');
+
+    // Array of lowercase letters
+    var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
+    // Function to generate the lines
+    function generateLines() {
+        var lines = '';
+
+        for (var i = 0; i < 12; i++) {
+            var line = '<div class="line">';
+
+            for (var j = 0; j < 10; j++) {
+                var letter = letters[(i * 10 + j) % letters.length];
+                line += '<div class="letter">' + letter + '</div>';
+            }
+
+            line += '</div>';
+            lines += line;
+        }
+
+        printContent.innerHTML = lines;
+    }
+
+    // Event listener for print button
+    printButton.addEventListener('click', function() {
+        window.print();
+    });
+
+    // Generate the lines when the page loads
+    generateLines();
+</script>
+</body>
+</html>
