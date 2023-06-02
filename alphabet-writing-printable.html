@@ -3,7 +3,7 @@
 <head>
     <title>Lowercase Alphabet Practice</title>
     <meta charset="UTF-8">
-    <meta name="description" content="Printable lowercase alphabet practice for preschoolers">
+    <meta name="description" content="Printable alphabet and numbers worksheet for preschoolers">
     <style>
         @font-face {
             font-family: 'EduNSWACTFoundation-VariableFont_wght';
@@ -27,8 +27,17 @@
             text-align: center;
         }
 
+        .radio-container {
+            display: block;
+            margin: auto auto 20px;
+            text-align: center;
+        }
+
         @media print {
             #print-btn {
+                display: none;
+            }
+            .radio-container {
                 display: none;
             }
         }
@@ -37,9 +46,6 @@
             max-width: 800px;
             margin: 0 auto;
             background-color: #fff;
-            /*border-radius: 5px;*/
-            /*padding: 20px;*/
-            /*box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);*/
         }
 
         .line {
@@ -56,28 +62,52 @@
             width: calc(100% / 10);
             opacity: 0.1;
         }
+
     </style>
 </head>
 <body>
-<button id="print-btn">Print</button>
+<div>
+    <button id="print-btn">Print</button>
+    <div class="radio-container">
+        <input type="radio" name="alphabet" id="uppercase" checked>
+        <label for="uppercase">Uppercase</label>
+        <input type="radio" name="alphabet" id="lowercase">
+        <label for="lowercase">Lowercase</label>
+        <input type="radio" name="alphabet" id="numbers">
+        <label for="numbers">Numbers</label>
+    </div>
+</div>
+
 <div class="page" id="print-content"></div>
 
 <script>
-    var printButton = document.getElementById('print-btn');
-    var printContent = document.getElementById('print-content');
+    const printButton = document.getElementById('print-btn');
+    const printContent = document.getElementById('print-content');
+    const uppercaseRadio = document.getElementById('uppercase');
+    const lowercaseRadio = document.getElementById('lowercase');
+    const numbersRadio = document.getElementById('numbers');
 
-    // Array of lowercase letters
-    var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    uppercaseRadio.addEventListener('change', function() {
+        generateLines(upperCaseLetters);
+    });
+
+    lowercaseRadio.addEventListener('change', function() {
+        generateLines(lowerCaseLetters);
+    });
+
+    numbersRadio.addEventListener('change', function() {
+        generateLines(numbers);
+    });
 
     // Function to generate the lines
-    function generateLines() {
-        var lines = '';
+    function generateLines(letters) {
+        let lines = '';
 
-        for (var i = 0; i < 12; i++) {
-            var line = '<div class="line">';
+        for (let i = 0; i < 8; i++) {
+            let line = '<div class="line">';
 
-            for (var j = 0; j < 10; j++) {
-                var letter = letters[(i * 10 + j) % letters.length];
+            for (let j = 0; j < 10; j++) {
+                const letter = letters[(i * 10 + j) % letters.length];
                 line += '<div class="letter">' + letter + '</div>';
             }
 
@@ -94,7 +124,10 @@
     });
 
     // Generate the lines when the page loads
-    generateLines();
+    const lowerCaseLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    const upperCaseLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+    const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
+    generateLines(upperCaseLetters);
 </script>
 </body>
 </html>
